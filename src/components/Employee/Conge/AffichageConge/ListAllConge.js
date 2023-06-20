@@ -1,0 +1,350 @@
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+// import { format } from 'date-fns';
+// import numeral from 'numeral';
+import axios from 'axios';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { NavLink as RouterLink } from 'react-router-dom';
+
+
+
+import {
+  Tooltip,
+  Divider,
+  Card,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableContainer,
+  Typography,
+  useTheme,
+  Link,
+  CardContent
+} from '@mui/material';
+
+// import Label from 'src/components/Label';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import EmployeeForm from './EmployeeForm';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+
+
+
+
+const ListAllConge = () => {
+
+
+  // const { register, handleSubmit, formState: { errors } } = useForm();
+
+
+  /* const onSubmit = () => {
+
+    // setOpen(true);
+    // event.preventDefault();
+    const produitObject = {
+      code: code,
+      DateD: moment(DateD).format("Y-M-D"),
+      DateF: moment(DateF).format("Y-M-D"),
+      Description: Description,
+      EmployeeId: id
+    };
+
+    const config = ({
+      "Access-Control-Allow-Origin": "*",
+    })
+
+
+    axios.post("https://localhost:44333/api/Conge", produitObject, config).then(
+      (res) => {
+
+        // window.location.reload(true)
+        setListeConge([...ListConge, res.data]);
+        console.log(res.data)
+
+        // setOpenA(true);
+      });
+    navigate('/Conge/ListeConge', { replace: true });
+    setcode("");
+    setDateD("");
+    setDateF("");
+    setDescription("");
+
+    console.log(produitObject);
+    setOpenM(false);
+
+  }
+
+  //  const [elements, setElements] = useState([]);
+  const navigate = useNavigate();
+
+*/
+
+
+  const theme = useTheme();
+  const [openA, setOpenA] = React.useState(false);
+  const handleCloseA = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenA(false);
+  };
+
+
+
+  const [ListConge, setListeConge] = useState([]);
+
+  const config = ({
+    "Access-Control-Allow-Origin": "*",
+  })
+
+
+  useEffect(() => {
+    axios.get("https://localhost:44333/api/Conge/GetCongesByIdEmployee?idE=" + localStorage.getItem('IDEmployee'), config).then((res) => {
+      setListeConge(res.data)
+    })
+  }, [])
+
+  const setData = (data) => {
+    let { id, code, DateD, DateF, Description, etat } = data;
+    localStorage.setItem('ID', id);
+    localStorage.setItem('code', code);
+    localStorage.setItem('DateD', DateD);
+    localStorage.setItem('DateF', DateF);
+    localStorage.setItem('Description', Description);
+    localStorage.setItem('Etat', etat);
+  }
+
+
+  const onDelete = () => {
+
+    axios.delete("https://localhost:44333/api/Conge/" + deleteData.id, config).then((res) => {
+
+      console.log(res.data);
+
+      setListeConge(ListConge.filter(element => element.id !== deleteData.id));
+
+      // window.location.reload(true)
+
+      setOpenA(true);
+
+
+    })
+    setOpen(false);
+
+  }
+
+  const [open, setOpen] = React.useState(false);
+  const [deleteData, setDeleteData] = useState({});
+
+
+  const handleClickOpen = (val) => {
+    setOpen(true);
+    setDeleteData(val)
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
+  return (
+
+    <><>  <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Attention!"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Tu es sur de supprimer ce congé !
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Annuler</Button>
+        <Button onClick={onDelete} autoFocus>
+          Supprimer
+        </Button>
+      </DialogActions>
+    </Dialog> </>
+
+     
+
+
+      <Card>
+
+      <EmployeeForm/>
+       
+
+
+
+        <CardContent>
+
+          <Divider />
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+
+                  <TableCell>code</TableCell>
+                  <TableCell>Date Debut</TableCell>
+                  <TableCell>Date Fin</TableCell>
+                  <TableCell align="right">Description</TableCell>
+                  <TableCell align="right">Etat</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {ListConge.map((val, ind) => {
+
+                  return (
+                    <TableRow
+                      hover
+                      key={ind}
+
+                    >
+
+                      <TableCell>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {val.code}
+                        </Typography>
+
+                      </TableCell>
+
+                      <TableCell>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {val.DateD.substring(0, 10)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {val.DateF.substring(0, 10)}
+                        </Typography>
+
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {val.Description}
+                        </Typography>
+
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {val.etat}
+                        </Typography>
+
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <Tooltip title="Modifier Congé" arrow>
+                          <Link to="/Conge/ModifierConge"
+                            component={RouterLink}
+                          >
+                            <IconButton
+                              onClick={() => setData(val)}
+                              sx={{
+                                '&:hover': {
+                                  background: theme.colors.primary.lighter
+                                },
+                                color: theme.palette.primary.main
+                              }}
+                              color="inherit"
+                              size="small"
+                            >
+                              <EditTwoToneIcon fontSize="small" />
+
+                            </IconButton>
+                          </Link>
+                        </Tooltip>
+
+
+
+                        <Tooltip title="Supprimer Employee" arrow>
+
+                          <IconButton
+                            onClick={() => handleClickOpen(val)}
+                            sx={{
+                              '&:hover': { background: theme.colors.error.lighter },
+                              color: theme.palette.error.main
+                            }}
+                            color="inherit"
+                            size="small"
+                          >
+                            <DeleteTwoToneIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+
+
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+
+        </CardContent>
+
+      </Card>
+      <Snackbar open={openA} autoHideDuration={3000} onClose={handleCloseA} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Alert onClose={handleCloseA} severity="error" lg={{ width: '100%' }}>
+          Congé supprimé avec succée!
+        </Alert>
+      </Snackbar>
+
+    </>
+  );
+};
+
+
+
+export default ListAllConge;
